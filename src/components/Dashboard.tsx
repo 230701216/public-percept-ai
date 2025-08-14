@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, TrendingUp, TrendingDown, AlertTriangle, Users, MessageSquare, BarChart3, Bell } from "lucide-react";
@@ -9,90 +7,18 @@ import { BrandSearch } from "./BrandSearch";
 import { SentimentChart } from "./SentimentChart";
 import { AlertsPanel } from "./AlertsPanel";
 import { ReportsPanel } from "./ReportsPanel";
-
-interface SentimentData {
-  timestamp: string;
-  positive: number;
-  negative: number;
-  neutral: number;
-  total: number;
-}
-
-interface BrandMetrics {
-  name: string;
-  overall_score: number;
-  positive_count: number;
-  negative_count: number;
-  neutral_count: number;
-  total_mentions: number;
-  trend: "up" | "down" | "stable";
-  risk_level: "low" | "medium" | "high" | "critical";
-}
+import { useBrandMonitoring } from "@/hooks/useBrandMonitoring";
 
 export const Dashboard = () => {
-  const [selectedBrand, setSelectedBrand] = useState<string>("");
-  const [isMonitoring, setIsMonitoring] = useState<boolean>(false);
-  const [sentimentData, setSentimentData] = useState<SentimentData[]>([]);
-  const [brandMetrics, setBrandMetrics] = useState<BrandMetrics | null>(null);
-  const [alerts, setAlerts] = useState<any[]>([]);
-
-  // Mock data for demo purposes
-  useEffect(() => {
-    if (selectedBrand && isMonitoring) {
-      // Simulate real-time data updates
-      const interval = setInterval(() => {
-        const newData: SentimentData = {
-          timestamp: new Date().toISOString(),
-          positive: Math.floor(Math.random() * 50) + 20,
-          negative: Math.floor(Math.random() * 30) + 10,
-          neutral: Math.floor(Math.random() * 40) + 20,
-          total: 0
-        };
-        newData.total = newData.positive + newData.negative + newData.neutral;
-        
-        setSentimentData(prev => [...prev.slice(-20), newData]);
-        
-        // Update brand metrics
-        const negativePercentage = (newData.negative / newData.total) * 100;
-        setBrandMetrics({
-          name: selectedBrand,
-          overall_score: Math.round(((newData.positive - newData.negative) / newData.total) * 100),
-          positive_count: newData.positive,
-          negative_count: newData.negative,
-          neutral_count: newData.neutral,
-          total_mentions: newData.total,
-          trend: Math.random() > 0.5 ? "up" : "down",
-          risk_level: negativePercentage > 50 ? "critical" : negativePercentage > 35 ? "high" : negativePercentage > 20 ? "medium" : "low"
-        });
-
-        // Generate alerts for critical sentiment
-        if (negativePercentage > 50) {
-          setAlerts(prev => [{
-            id: Date.now(),
-            brand: selectedBrand,
-            type: "critical",
-            message: `High negative sentiment detected: ${negativePercentage.toFixed(1)}%`,
-            timestamp: new Date().toISOString()
-          }, ...prev.slice(0, 9)]);
-        }
-      }, 3000);
-
-      return () => clearInterval(interval);
-    }
-  }, [selectedBrand, isMonitoring]);
-
-  const handleBrandSelect = (brand: string) => {
-    setSelectedBrand(brand);
-    setIsMonitoring(true);
-    setSentimentData([]);
-    setBrandMetrics(null);
-  };
-
-  const stopMonitoring = () => {
-    setIsMonitoring(false);
-    setSentimentData([]);
-    setBrandMetrics(null);
-  };
+  const {
+    selectedBrand,
+    isMonitoring,
+    sentimentData,
+    brandMetrics,
+    alerts,
+    startMonitoring,
+    stopMonitoring
+  } = useBrandMonitoring();
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -120,7 +46,7 @@ export const Dashboard = () => {
         </header>
 
         {/* Brand Search */}
-        <BrandSearch onBrandSelect={handleBrandSelect} selectedBrand={selectedBrand} />
+        <BrandSearch onBrandSelect={startMonitoring} selectedBrand={selectedBrand} />
 
         {/* Main Dashboard */}
         {selectedBrand && (
