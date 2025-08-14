@@ -14,7 +14,189 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          acknowledged: boolean | null
+          brand_id: string
+          created_at: string
+          id: string
+          message: string
+          metadata: Json | null
+          severity: string | null
+          type: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          brand_id: string
+          created_at?: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          severity?: string | null
+          type: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          brand_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          severity?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brands: {
+        Row: {
+          created_at: string
+          id: string
+          is_monitoring: boolean | null
+          last_checked: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_monitoring?: boolean | null
+          last_checked?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_monitoring?: boolean | null
+          last_checked?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sentiment_metrics: {
+        Row: {
+          brand_id: string
+          id: string
+          negative_count: number | null
+          neutral_count: number | null
+          overall_score: number | null
+          positive_count: number | null
+          risk_level: string | null
+          timestamp: string
+          total_count: number | null
+        }
+        Insert: {
+          brand_id: string
+          id?: string
+          negative_count?: number | null
+          neutral_count?: number | null
+          overall_score?: number | null
+          positive_count?: number | null
+          risk_level?: string | null
+          timestamp?: string
+          total_count?: number | null
+        }
+        Update: {
+          brand_id?: string
+          id?: string
+          negative_count?: number | null
+          neutral_count?: number | null
+          overall_score?: number | null
+          positive_count?: number | null
+          risk_level?: string | null
+          timestamp?: string
+          total_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sentiment_metrics_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sentiments: {
+        Row: {
+          brand: string | null
+          created_at: string | null
+          id: string
+          sentiment: string | null
+          tweet: string | null
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string | null
+          id?: string
+          sentiment?: string | null
+          tweet?: string | null
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string | null
+          id?: string
+          sentiment?: string | null
+          tweet?: string | null
+        }
+        Relationships: []
+      }
+      tweets: {
+        Row: {
+          analyzed_at: string | null
+          author_username: string | null
+          brand_id: string
+          confidence_score: number | null
+          content: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          sentiment: string | null
+          tweet_id: string
+        }
+        Insert: {
+          analyzed_at?: string | null
+          author_username?: string | null
+          brand_id: string
+          confidence_score?: number | null
+          content: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          sentiment?: string | null
+          tweet_id: string
+        }
+        Update: {
+          analyzed_at?: string | null
+          author_username?: string | null
+          brand_id?: string
+          confidence_score?: number | null
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          sentiment?: string | null
+          tweet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tweets_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
